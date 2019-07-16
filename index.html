@@ -1,0 +1,263 @@
+<!--  
+
+	
+	TODO: 
+	- add Computer Vision to loading screen
+		add 1 second delay for computer vision first, then wait for XHR loading for machine learning
+	- once files are selected, change button text to "Change files"
+	- fix < 3 images
+
+
+--> 
+
+<html>
+	<head>
+		<title>PinkAI</title>
+
+		<style>
+			body{
+				background-color: rgba(0, 0, 0, 0.95);
+				color:white;
+				margin-top:50px;
+			}
+
+			h1, h2{
+				width: 100%;
+				text-align: center;
+			}
+
+
+			h1{
+				font-family: "Gotham Medium";
+				color: rgba(255, 164, 164, 1);
+				font-size: 58px;
+				margin-bottom: 10px;
+			}
+
+			h2{
+				font-family: "Gotham Book";
+				padding-right: 20%;
+				padding-left: 20%;
+				width:auto;
+				margin-top: 10px;
+				font-size: 35px;
+				margin-bottom: 30px;
+			}
+
+			form{
+				width: 100%;
+				text-align: center;
+			
+			}
+
+			#loading{
+				font-size: 40px;
+			}
+
+			#submitBtn{
+				outline: none;
+				background-color: transparent;
+				border:10px solid #ffa4a4;
+				padding: 30px 40px;
+				color:white;
+				cursor: pointer;
+				font-family: "Montserrat";
+				font-size: 24px;
+			}
+
+			.custom-file-input {
+			  color: transparent;
+			  width: 196px;
+			}
+
+			.custom-file-input.selected{
+				width: 215px;
+			}
+			.custom-file-input::-webkit-file-upload-button {
+			  visibility: hidden;
+			}
+			.custom-file-input.unselected::before {
+			  content: 'Select images';
+			  color: black;
+			  display: inline-block;
+			  background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
+			  border: 1px solid #999;
+			  border-radius: 3px;
+			  padding: 5px 8px;
+			  outline: none;
+			  white-space: nowrap;
+			  -webkit-user-select: none;
+			  cursor: pointer;
+			  text-shadow: 1px 1px #fff;
+			  font-weight: 700;
+			  font-size: 20pt;
+			}
+			.custom-file-input.selected::before {
+				content: "Change images";
+				color: black;
+				display: inline-block;
+				background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
+				border: 1px solid #999; 
+				border-radius: 3px; 
+				padding: 5px 8px; 
+				outline: none; 
+				white-space: nowrap;
+				-webkit-user-select: none; 
+				cursor: pointer; 
+				text-shadow: 1px 1px #fff; 
+				font-weight: 700;
+				font-size: 20pt;
+			}
+			.custom-file-input:hover::before {
+			  border-color: black;
+			}
+			.custom-file-input:active {
+			  outline: 0;
+			}
+			.custom-file-input:active::before {
+			  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+			}
+
+			.lds-dual-ring {
+			  display: inline-block;
+			  width: 64px;
+			  text-align: center;
+			  height: 64px;
+			}
+
+			.lds-dual-ring:after {
+			  content: " ";
+			  display: block;
+			  width: 46px;
+			  height: 46px;
+			  margin: 1px;
+			  border-radius: 50%;
+			  border: 5px solid #fff;
+			  border-color: #fff transparent #fff transparent;
+			  animation: lds-dual-ring 1.2s linear infinite;
+			}
+			@keyframes lds-dual-ring {
+			  0% {
+			    transform: rotate(0deg);
+			  }
+			  100% {
+			    transform: rotate(360deg);
+			  }
+			}
+
+			.col-3>p{
+				font-family: "Gotham Medium";
+			}
+
+			.class{
+				font-size:35px;
+			}
+
+			.confidence{
+				font-size: 22px;
+			
+			}
+
+			.confidence>span{
+				color: #ffa4a4;
+				font-size: 32px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<h1>PinkAI</h1>
+		<h2>Accurate, Affordable, Efficient Biopsy Analysis for Breast Cancer Detection</h2>
+
+		<p id="loading" style="font-family: 'Gotham Light'; font-size: 30px; width: 100%; text-align: center;">Upload Biopsy Images</p>
+		<div style="width: 100%; text-align: center;"><div class="lds-dual-ring" id="loading-anim"></div></div>
+
+
+		<form id="fileSelect">
+			<input type="file" id="file" name="upload" class="custom-file-input unselected" multiple><br>
+			<input id="submitBtn" type="submit" value="Run PinkAI!">
+		</form>
+
+		<div id="resultContainer" style="text-align:center; width: 100%; display:none;">
+			<div class="col-3" style="width: 20%;margin:20px;display:inline-block;">
+				<img src="data/image-0.png" alt="" style="width:100%">
+				<p class="class" id="classification-1">BENIGN</p>
+				<p class="confidence" id="confidence-1"><span>93.11%</span> CONFIDENCE</p>
+			</div>
+
+			<div class="col-3" style="width: 20%;margin:20px;display:inline-block;">
+				<img src="data/image-1.png" alt="" style="width:100%">
+				<p class="class" id="classification-2">MALIGNANT</p>
+				<p class="confidence" id="confidence-2"><span>90.45%</span> CONFIDENCE</p>
+			</div>
+
+			<div class="col-3" style="width: 20%;margin:20px;display:inline-block;">
+				<img src="data/image-2.png" alt="" style="width:100%">
+				<p class="class" id="classification-3">MALIGNANT</p>
+				<p class="confidence" id="confidence-3"><span>91.22%</span> CONFIDENCE</p>
+			</div>
+		</div>
+
+		<script
+		  src="https://code.jquery.com/jquery-3.4.1.min.js"
+		  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		  crossorigin="anonymous"></script>
+
+		<script>
+			var input = document.getElementById("file");
+			input.onchange = function(e){
+				input.className = "custom-file-input selected";
+			}
+			$(document).ready(function(){
+				$("#loading-anim").hide();
+				$("#fileSelect").submit(function(e) {
+					e.preventDefault();
+					$(this).hide();
+					$("#loading").text("Analyzing with computer vision...");
+					setTimeout(function(){	
+		  				$("#loading").text("Processing with machine learning...");
+					}, 1500)
+		  			$("#loading-anim").fadeIn();
+					var form = document.getElementById('#fileSelect');
+					var formData = new FormData();
+					var ins = document.getElementById('file').files.length;
+					//console.log(ins);
+					for (var x = 0; x < ins; x++) {
+					    formData.append("upload[]", document.getElementById('file').files[x]);
+					}
+					//formData.append('file', $('input[type=file]')[0].files[0]);
+
+					var xhr = new XMLHttpRequest();
+
+					xhr.open('POST', 'run_script.php', true);
+					xhr.send(formData);
+
+					xhr.onreadystatechange = function(){
+						if (xhr.readyState==4 && xhr.status==200){
+							$("#loading").text("Classifications determined!");
+							$("#loading-anim").hide();
+							var json = xhr.responseText;
+							
+							var newJson = json.replace(/([a-zA-Z0-9]+?):/g, '"$1":');
+							newJson = newJson.replace(/'/g, '"');
+
+							var data = JSON.parse(newJson);
+								
+							$("#resultContainer").fadeIn();
+							for(var i = 1; i <= data.length; i++){
+								$("#confidence-" + i).html("<span>" + (data[i-1]["confidence"] * 100).toFixed(2).toString() + "%</span> CONFIDENCE");
+								$("#classification-" + i).text(data[i-1]["classification"]);
+								setTimeout(function(){
+									$("#image-" + i).attr("src", "data/image-" + (i-1) + ".png");
+								}, 500);
+							}
+
+							console.log(data);
+						}
+					}
+
+				})
+			})
+		</script>
+	</body>
+</html>
